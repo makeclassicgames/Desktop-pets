@@ -17,6 +17,7 @@
 
 #include <raylib.h>
 #include "entity.h"
+#include "timer.h"
 
 #define MAX_ENTITIES 10
 
@@ -30,8 +31,11 @@ void init(void);
 void update(void);
 void draw(void);
 
+void onTimer(void);
+
 Entity entity[MAX_ENTITIES];
 int entityCount = 0;
+Timer timer;
 
 //------------------------------------------------------------------------------------
 // Program main entry point
@@ -79,11 +83,12 @@ void init(void)
     SetTargetFPS(60);
     entityCount = 2;
     
-    Entity_init(&entity[0],"../resources/zerasul.png",(Vector2){100,GetScreenHeight()-64},(Vector2){0.0,0});
-    Sprite_setAnimation(&entity[0].sprite,2);
+    Entity_init(&entity[0],"../resources/zerasul.png",(Vector2){100,GetScreenHeight()-64},(Vector2){100.0,0});
+    Sprite_setAnimation(&entity[0].sprite,1);
     Entity_init(&entity[1],"../resources/sharedia.png",(Vector2){100+50,GetScreenHeight()-64},(Vector2){0.0,0});
     Sprite_setAnimation(&entity[1].sprite,2);
     
+    Timer_init(&timer, 4, true, true,onTimer);
 
     TraceLog(LOG_INFO,"Init finalizado");
 
@@ -94,7 +99,7 @@ void update(void)
     for(int i=0;i<entityCount;i++){
         Entity_update(&entity[i]);
     }
-
+    Timer_update(&timer);
 }
 
 void draw(void)
@@ -105,4 +110,13 @@ void draw(void)
         Entity_draw(&entity[i]);
     }
     
+}
+
+void onTimer(void){
+    entity[0].velocity.x= -entity[0].velocity.x;
+    if(entity[0].velocity.x>0){
+        Sprite_setAnimation(&entity[0].sprite,1);
+    }else{
+        Sprite_setAnimation(&entity[0].sprite,3);
+    }
 }

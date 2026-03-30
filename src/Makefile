@@ -400,6 +400,7 @@ endif
 # Define source code object files required
 #------------------------------------------------------------------------------------------------
 PROJECT_SOURCE_FILES ?= \
+   timer.c \
    sprite.c \
    entity.c \
    main.c \
