@@ -1,5 +1,6 @@
 #include "timer.h"
 
+
 #define SECONDS_TOFRAMES(s) s*60
 
 void Timer_init(Timer* timer, int maxTime, bool autoStart, bool repeat,void (*callBack)(void)){

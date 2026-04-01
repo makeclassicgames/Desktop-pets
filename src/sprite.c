@@ -31,14 +31,14 @@ void Sprite_setAnimation(Sprite* sprite, int animationIndex){
 void Animation_Init(Animation * animation, int frameWidth, int frameHeight, int frameCount, int frameDelay){
     animation->currentFrame=0;
     animation->frameCount=frameCount;
-    animation->frameWidth = frameHeight;
+    animation->frameWidth = frameWidth;
     animation->frameHeight = frameHeight;
     animation->frameDelay = frameDelay;
     animation->current_time = 0;
 }
 
 void Animation_Update(Animation * animation){
-    animation->current_time ++;
+    animation->current_time++;
     if(animation->current_time >= animation->frameDelay){
         animation->currentFrame++;
         if(animation->currentFrame>=animation->frameCount){

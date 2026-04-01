@@ -1,6 +1,8 @@
 #pragma once
 #include <raylib.h>
 
+#define SECONDS_TOFRAMES(s) s*60
+
 typedef struct _timer{
     int currentTime;
     int maxTime;

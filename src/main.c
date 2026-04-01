@@ -33,9 +33,8 @@ void draw(void);
 
 void onTimer(void);
 
-Entity entity[MAX_ENTITIES];
-int entityCount = 0;
-Timer timer;
+Pet pets[MAX_ENTITIES];
+int petsCount = 0;
 
 //------------------------------------------------------------------------------------
 // Program main entry point
@@ -65,8 +64,8 @@ int main(void)
         EndDrawing();
         //----------------------------------------------------------------------------------
     }
-    for(int i=0;i<entityCount;i++){
-            Entity_unload(&entity[i]);
+    for(int i=0;i<petsCount;i++){
+            Entity_unload(&pets[i].entity);
     }
     CloseWindow(); // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
@@ -81,14 +80,12 @@ void init(void)
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Virtual Pet");
     SetWindowPosition(GetMonitorWidth(0) - GetScreenWidth(), GetMonitorHeight(0) - GetScreenHeight());
     SetTargetFPS(60);
-    entityCount = 2;
+    petsCount = 2;
     
-    Entity_init(&entity[0],"../resources/zerasul.png",(Vector2){100,GetScreenHeight()-64},(Vector2){100.0,0});
-    Sprite_setAnimation(&entity[0].sprite,1);
-    Entity_init(&entity[1],"../resources/sharedia.png",(Vector2){100+50,GetScreenHeight()-64},(Vector2){0.0,0});
-    Sprite_setAnimation(&entity[1].sprite,2);
-    
-    Timer_init(&timer, 4, true, true,onTimer);
+    Pet_Init(&pets[0],"../resources/zerasul.png",(Vector2){100,GetScreenHeight()-64});
+    //Entity_init(&entity[0],"../resources/zerasul.png",(Vector2){100,GetScreenHeight()-64},(Vector2){100.0,0});
+    Pet_Init(&pets[1],"../resources/sharedia.png",(Vector2){100+50,GetScreenHeight()-64});
+
 
     TraceLog(LOG_INFO,"Init finalizado");
 
@@ -96,27 +93,26 @@ void init(void)
 
 void update(void)
 {
-    for(int i=0;i<entityCount;i++){
-        Entity_update(&entity[i]);
+    for(int i=0;i<petsCount;i++){
+        Pet_update(&pets[i]);
     }
-    Timer_update(&timer);
 }
 
 void draw(void)
 {
 
-    for (int i = 0; i < entityCount; i++)
+    for (int i = 0; i < petsCount; i++)
     {
-        Entity_draw(&entity[i]);
+        Pet_draw(&pets[i]);
     }
     
 }
 
 void onTimer(void){
-    entity[0].velocity.x= -entity[0].velocity.x;
-    if(entity[0].velocity.x>0){
-        Sprite_setAnimation(&entity[0].sprite,1);
+    pets[0].entity.velocity.x= -pets[0].entity.velocity.x;
+    if(pets[0].entity.velocity.x>0){
+        Sprite_setAnimation(&pets[0].entity.sprite,1);
     }else{
-        Sprite_setAnimation(&entity[0].sprite,3);
+        Sprite_setAnimation(&pets[0].entity.sprite,3);
     }
 }

@@ -3,7 +3,21 @@
 
 #include <raylib.h>
 
+#include "timer.h"
 #include "sprite.h"
+
+
+
+typedef struct _petTimer{
+    void* pet;
+    int currentTime;
+    int maxTime;
+    bool started;
+    bool repeat;
+    void (*callBack)(void*);
+} PetTimer;
+
+
 
 typedef struct _entity{
     Vector2 position;
@@ -11,10 +25,36 @@ typedef struct _entity{
     Sprite sprite;
 } Entity;
 
+typedef enum _direction{
+    UP,
+    RIGHT,
+    DOWN,
+    LEFT
+} Direction;
+
+typedef struct _pet {
+    Entity entity;
+    Direction direction;
+    PetTimer petTimer;
+} Pet;
+
 void Entity_init(Entity*,char*, Vector2,Vector2);
 void Entity_update(Entity*);
 void Entity_draw(Entity*);
 void Entity_unload(Entity*);
+
+
+//pet functions
+
+void Pet_Init(Pet*, char*, Vector2);
+void Pet_update(Pet*);
+void Pet_draw(Pet*);
+
+void PetTimer_init(PetTimer* timer,Pet* pet, int maxTime, bool started, bool repeat,void (*callBack)(void*));
+void PetTimer_start(PetTimer* timer);
+void PetTimer_stop(PetTimer* timer);
+void PetTimer_pause(PetTimer* timer);
+void PetTimer_update(PetTimer* timer);
 
 #endif // ENTITY_H
 
