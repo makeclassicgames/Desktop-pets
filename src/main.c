@@ -14,7 +14,7 @@
  *   Copyright (c) 2025 zerasul (@zerasul) - All rights reserved.
  *
  ********************************************************************************************/
-
+#include <stdlib.h>
 #include <raylib.h>
 #include "entity.h"
 #include "timer.h"
@@ -32,9 +32,13 @@ void update(void);
 void draw(void);
 
 void onTimer(void);
+void onClickButton(void* buttonRef);
 
 Pet pets[MAX_ENTITIES];
 int petsCount = 0;
+Button closeButton;
+
+bool windowRunning = true;
 
 //------------------------------------------------------------------------------------
 // Program main entry point
@@ -49,7 +53,7 @@ int main(void)
     //--------------------------------------------------------------------------------------
 
     // Main game loop
-    while (!WindowShouldClose()) // Detect window close button or ESC key
+    while (!WindowShouldClose() && windowRunning) // Detect window close button or ESC key
     {
         // Update
         //----------------------------------------------------------------------------------
@@ -67,6 +71,7 @@ int main(void)
     for(int i=0;i<petsCount;i++){
             Entity_unload(&pets[i].entity);
     }
+    Entity_unload(&closeButton.entity);
     CloseWindow(); // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
 
@@ -85,7 +90,7 @@ void init(void)
     Pet_Init(&pets[0],"../resources/zerasul.png",(Vector2){100,GetScreenHeight()-64});
     //Entity_init(&entity[0],"../resources/zerasul.png",(Vector2){100,GetScreenHeight()-64},(Vector2){100.0,0});
     Pet_Init(&pets[1],"../resources/sharedia.png",(Vector2){100+50,GetScreenHeight()-64});
-
+    Button_init(&closeButton,"../resources/closeButton.png",(Vector2){GetScreenWidth()-32,0},onClickButton);
 
     TraceLog(LOG_INFO,"Init finalizado");
 
@@ -96,6 +101,7 @@ void update(void)
     for(int i=0;i<petsCount;i++){
         Pet_update(&pets[i]);
     }
+    Button_update(&closeButton);
 }
 
 void draw(void)
@@ -105,7 +111,7 @@ void draw(void)
     {
         Pet_draw(&pets[i]);
     }
-    
+    Button_draw(&closeButton);
 }
 
 void onTimer(void){
@@ -114,5 +120,13 @@ void onTimer(void){
         Sprite_setAnimation(&pets[0].entity.sprite,1);
     }else{
         Sprite_setAnimation(&pets[0].entity.sprite,3);
+    }
+}
+
+void onClickButton(void* buttonRef){
+    Button* button = (Button*)buttonRef;
+    if(CheckCollisionPointRec(GetMousePosition(),button->collider)){
+        TraceLog(LOG_INFO,"Button Clicked");
+        windowRunning = false;
     }
 }

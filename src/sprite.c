@@ -4,9 +4,7 @@ void Sprite_init(Sprite* sprite,char * fileName){
 
     sprite->texture = LoadTexture(fileName);
     sprite->currentAnimation =0;
-    for(int i=0;i<MAX_ANIMS;i++){
-        Animation_Init(&sprite->animations[i],32,32,3,15);
-    }
+    sprite->animationCount =0;
 }
 
 void Sprite_update(Sprite* sprite){
@@ -24,6 +22,16 @@ void Sprite_Unload(Sprite* sprite){
 
 void Sprite_setAnimation(Sprite* sprite, int animationIndex){
     sprite->currentAnimation = animationIndex;
+}
+
+void Sprite_addAnimation(Sprite* sprite, int frameWidth, int frameHeight, int frameCount, int frameDelay){
+    if(sprite->animationCount>=MAX_ANIMS){
+        TraceLog(LOG_ERROR,"Max Animations Reached");
+        return;
+    }
+
+    Animation_Init(&sprite->animations[sprite->animationCount],frameWidth,frameHeight,frameCount,frameDelay);
+    sprite->animationCount++;
 }
 
 //Animation Functions

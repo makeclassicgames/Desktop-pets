@@ -28,6 +28,9 @@ void Entity_unload(Entity* entity){
 
 void Pet_Init(Pet* pet, char* fileName, Vector2 position){
     Entity_init(&pet->entity,fileName,position,(Vector2){0.0,0.0});
+    for(int i =0; i<MAX_ANIMS;i++){
+        Sprite_addAnimation(&pet->entity.sprite,32,32,3,15);
+    }
     pet->direction = LEFT;
     PetTimer_init(&pet->petTimer,(void*)pet,5,true,true,onPetTimer);
 }
@@ -106,4 +109,26 @@ void PetTimer_update(PetTimer* timer){
     }
 
     timer->currentTime ++;
+}
+
+void Button_init(Button* button, char* fileName, Vector2 position, void (*onClickButton)(void*)){
+    Entity_init(&button->entity,fileName,position,(Vector2){0.0,0.0});
+    Sprite_addAnimation(&button->entity.sprite,16,16,1,1);
+    Animation * currentAnim = &button->entity.sprite.animations[button->entity.sprite.currentAnimation];
+    button->collider = (Rectangle){position.x,position.y,currentAnim->frameWidth*2,currentAnim->frameHeight*2};
+    button->onClickButton = onClickButton;
+}
+
+void Button_update(Button* button){
+
+    Vector2 mousePosition = GetMousePosition();
+    if(CheckCollisionPointRec(mousePosition,button->collider)){
+        if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+            button->onClickButton(button);
+        }
+    }
+}
+void Button_draw(Button* button){
+    Entity_draw(&button->entity);
+
 }

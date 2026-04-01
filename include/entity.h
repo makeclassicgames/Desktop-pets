@@ -38,6 +38,12 @@ typedef struct _pet {
     PetTimer petTimer;
 } Pet;
 
+typedef struct _button{
+    Entity entity;
+    Rectangle collider;
+    void (*onClickButton)(void*);
+} Button;
+
 void Entity_init(Entity*,char*, Vector2,Vector2);
 void Entity_update(Entity*);
 void Entity_draw(Entity*);
@@ -56,5 +62,11 @@ void PetTimer_stop(PetTimer* timer);
 void PetTimer_pause(PetTimer* timer);
 void PetTimer_update(PetTimer* timer);
 
+//Button Functions
+
+void Button_init(Button* button, char* fileName, Vector2 position, void (*onClickButton)(void* button));
+void Button_update(Button* button);
+void Button_draw(Button* button);
+void Button_unload(Button* button);
 #endif // ENTITY_H
 
