@@ -132,3 +132,24 @@ void Button_draw(Button* button){
     Entity_draw(&button->entity);
 
 }
+
+void Button_unload(Button* button){
+    Entity_unload(&button->entity);
+}
+
+void Build_Pet(Pet* pet){
+    int petnum = GetRandomValue(0,PET_TYPES_NUM-1);
+    switch (petnum)
+    {
+    case SHAREDIA:
+        Pet_Init(pet,"../resources/sharedia.png",(Vector2){
+            GetRandomValue(0,GetScreenWidth()-32.0),GetScreenHeight()-64.0});
+        break;
+    case ZERASUL:
+        Pet_Init(pet,"../resources/zerasul.png",(Vector2){
+             GetRandomValue(0,GetScreenWidth()-32.0),GetScreenHeight()-64.0});
+    
+    default:
+        break;
+    }
+}

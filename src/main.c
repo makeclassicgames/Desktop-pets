@@ -14,6 +14,7 @@
  *   Copyright (c) 2025 zerasul (@zerasul) - All rights reserved.
  *
  ********************************************************************************************/
+#include<stdio.h>
 #include <stdlib.h>
 #include <raylib.h>
 #include "entity.h"
@@ -22,21 +23,56 @@
 #define MAX_ENTITIES 10
 
 #define WINDOW_WIDTH 450
-#define WINDOW_HEIGHT 450
+#define WINDOW_HEIGHT 250
 
 #define RECT_WIDTH 100
 #define RECT_HEIGHT 100
+
+enum scenes{
+    PETS,
+    SETTINGS
+};
+
+struct _PetScene{
+    Pet pets[MAX_ENTITIES];
+    int petsCount;
+    Button closeButton;
+    Button menuButton;
+    Button AddButton;
+} petScene;
+
+struct _SettingsScene{
+  Button closeButton;
+  Button backButton;
+} settingsScene;
+
+int currentScene;
 
 void init(void);
 void update(void);
 void draw(void);
 
+void init_pet_scene(void);
+void update_pet_scene(void);
+void draw_pet_scene(void);
+void unload_pet_scene(void);
+
+void init_settings_scene(void);
+void update_settings_scene(void);
+void draw_settings_scene(void);
+void unload_settings_scene(void);
+
+
+void unload_scenes(void);
+
+
 void onTimer(void);
 void onClickButton(void* buttonRef);
+void onMenuClickButton(void* buttonRef);
+void onBackClickButton(void* buttonRef);
+void onAddClickButton(void* buttonRef);
 
-Pet pets[MAX_ENTITIES];
-int petsCount = 0;
-Button closeButton;
+
 
 bool windowRunning = true;
 
@@ -68,10 +104,10 @@ int main(void)
         EndDrawing();
         //----------------------------------------------------------------------------------
     }
-    for(int i=0;i<petsCount;i++){
-            Entity_unload(&pets[i].entity);
+    for(int i=0;i<petScene.petsCount;i++){
+            Entity_unload(&petScene.pets[i].entity);
     }
-    Entity_unload(&closeButton.entity);
+    Entity_unload(&petScene.closeButton.entity);
     CloseWindow(); // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
 
@@ -85,41 +121,52 @@ void init(void)
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Virtual Pet");
     SetWindowPosition(GetMonitorWidth(0) - GetScreenWidth(), GetMonitorHeight(0) - GetScreenHeight());
     SetTargetFPS(60);
-    petsCount = 2;
-    
-    Pet_Init(&pets[0],"../resources/zerasul.png",(Vector2){100,GetScreenHeight()-64});
-    //Entity_init(&entity[0],"../resources/zerasul.png",(Vector2){100,GetScreenHeight()-64},(Vector2){100.0,0});
-    Pet_Init(&pets[1],"../resources/sharedia.png",(Vector2){100+50,GetScreenHeight()-64});
-    Button_init(&closeButton,"../resources/closeButton.png",(Vector2){GetScreenWidth()-32,0},onClickButton);
 
+    currentScene = PETS;
+    init_pet_scene();
+    init_settings_scene();
     TraceLog(LOG_INFO,"Init finalizado");
 
 }
 
 void update(void)
 {
-    for(int i=0;i<petsCount;i++){
-        Pet_update(&pets[i]);
+
+    switch (currentScene)
+    {
+    case PETS:
+        update_pet_scene();
+        break;
+    case SETTINGS:
+        update_settings_scene();
+        break;
+    default:
+        break;
     }
-    Button_update(&closeButton);
 }
 
 void draw(void)
 {
-
-    for (int i = 0; i < petsCount; i++)
+    switch (currentScene)
     {
-        Pet_draw(&pets[i]);
+    case PETS:
+        draw_pet_scene();
+        break;
+    case SETTINGS:
+        draw_settings_scene();
+    
+    default:
+        break;
     }
-    Button_draw(&closeButton);
+    
 }
 
 void onTimer(void){
-    pets[0].entity.velocity.x= -pets[0].entity.velocity.x;
-    if(pets[0].entity.velocity.x>0){
-        Sprite_setAnimation(&pets[0].entity.sprite,1);
+    petScene.pets[0].entity.velocity.x= -petScene.pets[0].entity.velocity.x;
+    if(petScene.pets[0].entity.velocity.x>0){
+        Sprite_setAnimation(&petScene.pets[0].entity.sprite,1);
     }else{
-        Sprite_setAnimation(&pets[0].entity.sprite,3);
+        Sprite_setAnimation(&petScene.pets[0].entity.sprite,3);
     }
 }
 
@@ -128,5 +175,97 @@ void onClickButton(void* buttonRef){
     if(CheckCollisionPointRec(GetMousePosition(),button->collider)){
         TraceLog(LOG_INFO,"Button Clicked");
         windowRunning = false;
+    }
+}
+
+void unloadScenes(void){
+    unload_pet_scene();
+    unload_settings_scene();
+}
+
+
+
+
+//Pet Scene
+
+void init_pet_scene(void){
+    petScene.petsCount = 2;
+    
+    for(size_t i = 0; i<petScene.petsCount;i++){
+        Build_Pet(&petScene.pets[i]);
+    }
+    Button_init(&petScene.closeButton,"../resources/closeButton.png",(Vector2){GetScreenWidth()-32,0},onClickButton);
+    Button_init(&petScene.menuButton,"../resources/menuButton.png",(Vector2){GetScreenWidth()-64.0,0},onMenuClickButton);
+    Button_init(&petScene.AddButton,"../resources/addButton.png",(Vector2){GetScreenWidth()-96.0,0},onAddClickButton);
+}
+
+void update_pet_scene(void){
+    for(int i=0;i<petScene.petsCount;i++){
+        Pet_update(&petScene.pets[i]);
+    }
+    Button_update(&petScene.closeButton);
+    Button_update(&petScene.menuButton);
+    Button_update(&petScene.AddButton);
+}
+
+void draw_pet_scene(void){
+
+    for (int i = 0; i < petScene.petsCount; i++)
+    {
+        Pet_draw(&petScene.pets[i]);
+    }
+    Button_draw(&petScene.closeButton);
+    Button_draw(&petScene.menuButton);
+    Button_draw(&petScene.AddButton);
+}
+
+
+void unload_pet_scene(void){
+    for(size_t i =0;i<petScene.petsCount;i++){
+        Entity_unload(&petScene.pets[i].entity);
+    }
+    Button_unload(&petScene.closeButton);
+    Button_unload(&petScene.menuButton);
+    Button_unload(&petScene.AddButton);
+
+}
+
+
+//Settings Scene
+
+void init_settings_scene(void){
+    Button_init(&settingsScene.closeButton,"../resources/closeButton.png",(Vector2){GetScreenWidth()-32,0},onClickButton);
+    Button_init(&settingsScene.backButton,"../resources/backButton.png",(Vector2){GetScreenWidth()-64.0,0},onBackClickButton);
+}
+
+void update_settings_scene(void){
+    Button_update(&settingsScene.closeButton);
+    Button_update(&settingsScene.backButton);
+}
+void draw_settings_scene(void){
+    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), BLACK);
+    Button_draw(&settingsScene.closeButton);
+    Button_draw(&settingsScene.backButton);
+    
+}
+
+void unload_settings_scene(void){
+    Button_unload(&settingsScene.closeButton);
+    Button_unload(&settingsScene.backButton);
+}
+
+
+void onMenuClickButton(void* buttonRef){
+    currentScene = SETTINGS;
+}
+
+void onBackClickButton(void* buttonRef){
+     currentScene = PETS;
+}
+
+void onAddClickButton(void* buttonRef){
+    if(petScene.petsCount<MAX_ENTITIES){
+        Build_Pet(&petScene.pets[petScene.petsCount]);
+        petScene.petsCount++;
     }
 }

@@ -6,6 +6,8 @@
 #include "timer.h"
 #include "sprite.h"
 
+#define PET_TYPES_NUM 2
+
 
 
 typedef struct _petTimer{
@@ -32,6 +34,11 @@ typedef enum _direction{
     LEFT
 } Direction;
 
+typedef enum _petType{
+    SHAREDIA,
+    ZERASUL
+} PetType;
+
 typedef struct _pet {
     Entity entity;
     Direction direction;
@@ -55,12 +62,15 @@ void Entity_unload(Entity*);
 void Pet_Init(Pet*, char*, Vector2);
 void Pet_update(Pet*);
 void Pet_draw(Pet*);
+void Build_Pet(Pet* pet);
 
 void PetTimer_init(PetTimer* timer,Pet* pet, int maxTime, bool started, bool repeat,void (*callBack)(void*));
 void PetTimer_start(PetTimer* timer);
 void PetTimer_stop(PetTimer* timer);
 void PetTimer_pause(PetTimer* timer);
 void PetTimer_update(PetTimer* timer);
+
+
 
 //Button Functions
 
